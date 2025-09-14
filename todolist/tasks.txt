@@ -1,0 +1,8 @@
+1,talking to kartik,2025-09-16,Pending
+2,Talk to Mumma,2025-09-10,Completed
+3,Post on instgram,2025-09-16,Pending
+5,write project description,2025-09-18,Completed
+6,grt,2026-07-18,Pending
+7,hytre,2025-07-05,Pending
+8,uy,2025-07-09,Pending
+9,treees,2025-07-18,Pending
