@@ -1,9 +1,17 @@
+from datetime import datetime
 import os
 TASKS_FILE="tasks.txt"
 # Get absolute path of current file
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Build path to tasks.txt in same folder
 file_path = os.path.join(script_dir, TASKS_FILE)
+
+def validate_date(date_text):
+    try:
+        datetime.strptime(date_text, "%Y-%m-%d")  # format: YYYY-MM-DD
+        return True
+    except ValueError:
+        return False
 
 def load_tasks():
     tasks=[]
@@ -19,18 +27,22 @@ def load_tasks():
 def save_tasks(tasks):
     with open(file_path,"w") as file:
         for task in tasks:
-            file.write(f"{task[0]},{task[1]},{task[2]},{task[3]}")
+            file.write(f"{task[0]},{task[1]},{task[2]},{task[3]}\n")
 
 
 def add_task(tasks):
     task_id= 1 if len(tasks)==0 else tasks[-1][0]+1
     task_desc=input("Enter task description: ")
     task_deadline=input("Enter deadline (YYYY-MM-DD): ")
-    task_status="Pending"
-    tasks.append([task_id,task_desc,task_deadline,task_status])
-    save_tasks(tasks)
-    print("Task added successfully!")
-    return load_tasks()
+    if(validate_date(task_deadline)):
+        task_status="Pending"
+        tasks.append([task_id,task_desc,task_deadline,task_status])
+        save_tasks(tasks)
+        print("Task added successfully!")
+        return load_tasks()
+    else:
+        print("Please enter valid date in format (YYYY-MM-DD).")
+        return tasks
 
 def view_tasks(tasks):
     print("\nTo-Do List:")
@@ -58,10 +70,14 @@ def edit_task(tasks):
             if t[0]== task_id:
                 task_desc=input("Enter new description: ")
                 task_deadline=input("Enter new task deadline (YYYY-MM-DD): ")
-                t[1],t[2]=task_desc,task_deadline
-                save_tasks(tasks)
-                print("Task updated successfully")
-                return load_tasks()
+                if(validate_date(task_deadline)):
+                    t[1],t[2]=task_desc,task_deadline
+                    save_tasks(tasks)
+                    print("Task updated successfully")
+                    return load_tasks()
+                else:
+                    print("Please enter valid date in format (YYYY-MM-DD).")
+                    return tasks
         print("Task not found.")
     except ValueError:
         print("Invalid input.")
@@ -71,10 +87,13 @@ def delete_task(tasks):
     view_tasks(tasks)
     try:
         task_id=int(input("Enter task id to delete:"))
-        tasks=[t for t in tasks if t[0]!=task_id]
-        save_tasks(tasks)
-        print("Task deleted successfully")
-        return load_tasks()
+        new_tasks=[t for t in tasks if t[0]!=task_id]
+        if len(new_tasks)==len(tasks):
+            print("Task not found.")
+        else:
+            save_tasks(new_tasks)
+            print("Task deleted successfully")
+            return load_tasks()
     except ValueError:
         print("Invalid input.")
     return tasks
