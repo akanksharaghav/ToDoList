@@ -27,8 +27,8 @@ def add_task(tasks):
     task_desc=input("Enter task description: ")
     task_deadline=input("Enter deadline (YYYY-MM-DD): ")
     task_status="Pending"
-    tasks.add([task_id,task_desc,task_deadline,task_status])
-    save_tasks()
+    tasks.append([task_id,task_desc,task_deadline,task_status])
+    save_tasks(tasks)
     print("Task added successfully!")
     return load_tasks()
 
@@ -45,7 +45,7 @@ def view_tasks(tasks):
     print("\n[Completed]")
     if len(completed_tasks)>0:
         for completed in completed_tasks:
-            print(f"{pending[0]}. {pending[1]} - Deadline: {pending[2]}")
+            print(f"{completed[0]}. {completed[1]} - Deadline: {completed[2]}")
     else:
         print("No completed tasks.")
     print()
@@ -80,7 +80,7 @@ def delete_task(tasks):
     return tasks
 
 def mark_completed(tasks):
-    view_tasks()
+    view_tasks(tasks)
     try:
         task_id=int(input("Enter task id to mark as completed:"))
         for t in tasks:
@@ -122,3 +122,6 @@ def main():
             break
         else:
             print("Invalid choice. Please try again.")
+
+if __name__=='__main__':
+    main()
