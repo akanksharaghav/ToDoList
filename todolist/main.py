@@ -17,10 +17,19 @@ PROJECT_DIR = get_project_dir()
 file_path = os.path.join(PROJECT_DIR, TASKS_FILE)
 
 def validate_date(date_text):
+    """
+    Returns True if the date is valid and not in the past.
+    Format: YYYY-MM-DD
+    """
     try:
-        datetime.strptime(date_text, "%Y-%m-%d")  # format: YYYY-MM-DD
+        input_date = datetime.strptime(date_text, "%Y-%m-%d").date()
+        today = datetime.today().date()
+        if input_date < today:
+            print(Fore.RED+"❌ Date cannot be in the past.")
+            return False
         return True
     except ValueError:
+        print(Fore.RED+"❌ Invalid date format. Use YYYY-MM-DD.")
         return False
 
 def load_tasks():
@@ -61,20 +70,21 @@ def add_task(tasks):
         print(Fore.GREEN+"✅ Task added successfully!")
         return load_tasks()
     else:
-        print(Fore.RED+"❌ Please enter valid date in format (YYYY-MM-DD).")
         return tasks
 
 def view_tasks(tasks):
     print()
     print(Back.LIGHTMAGENTA_EX+"📝 To-Do List:"+Style.RESET_ALL)
     pending_tasks=[t for t in tasks if t[3]=='Pending']
+    pending_tasks.sort(key=lambda pt:datetime.strptime(pt[2], "%Y-%m-%d"))
     completed_tasks=[t for t in tasks if t[3]=='Completed']
+    completed_tasks.sort(key=lambda ct:datetime.strptime(ct[2], "%Y-%m-%d"))
     print(Back.LIGHTMAGENTA_EX+Style.BRIGHT+"[Pending]")
     if len(pending_tasks)>0:
         for pending in pending_tasks:
             print(Fore.LIGHTYELLOW_EX+f"{pending[0]}. {pending[1]} - Deadline: {pending[2]}")
     else:
-        print("No pending tasks.")
+        print(Fore.LIGHTRED_EX+"❌ No pending tasks.")
     print()
     print(Back.LIGHTMAGENTA_EX+Style.BRIGHT+"[Completed]"+Style.RESET_ALL)
     if len(completed_tasks)>0:
@@ -98,7 +108,6 @@ def edit_task(tasks):
                     print(Fore.GREEN+Style.BRIGHT+"✅Task updated successfully")
                     return load_tasks()
                 else:
-                    print(Fore.RED+"❌ Please enter valid date in format (YYYY-MM-DD).📆")
                     return tasks
         print(Fore.RED+"❌ Task not found.")
     except ValueError:

@@ -1,7 +1,7 @@
 # ToDoListApp
 
-A simple Python command-line To-Do List Manager.  
-Allows adding, viewing, editing, deleting, and completing tasks. Tasks are saved in `tasks.txt`.
+A Python command-line To-Do List Manager with deadline validation.  
+Allows adding, viewing, editing, deleting, and completing tasks. Tasks are saved in `todolist/tasks.txt` in the project folder.
 
 ---
 
@@ -11,8 +11,8 @@ Allows adding, viewing, editing, deleting, and completing tasks. Tasks are saved
 ToDoListApp/
 │── todolist/           # Python package
 │   └── main.py         # main CLI script
-│── tasks.txt           # stores tasks
-│── setup.py            # installation script
+│   └── tasks.txt       # stores tasks (auto-created)
+│── setup.py            # optional installation script
 │── README.md
 │── .gitignore
 ```
@@ -21,8 +21,8 @@ ToDoListApp/
 
 ## Requirements
 
-- Python 3.7 or higher  
-- pip  
+- Python 3.7 or higher
+- pip
 
 ---
 
@@ -49,13 +49,13 @@ pip install colorama
 python3 todolist/main.py
 ```
 
-> Your tasks will be saved in `tasks.txt` in the project folder.
+> Tasks will be saved in `todolist/tasks.txt` in the project folder.
 
 ---
 
-### 4. Install as a CLI command (optional)
+### 4. Optional: Install as a CLI command
 
-If `setup.py` is included:
+If `setup.py` is provided:
 
 ```bash
 pip install -e .
@@ -67,26 +67,28 @@ pip install -e .
 todo
 ```
 
-> Tasks will be saved in the folder where the command is run.
+> Tasks will be saved in the `todolist` folder where the command is run.
 
 ---
 
 ## Features
 
-- Add new tasks with a description and deadline (YYYY-MM-DD)  
-- View tasks (Pending and Completed)  
+- Add new tasks with a description and **deadline (YYYY-MM-DD)**  
+- Validates date format and prevents past dates  
+- View tasks (Pending and Completed) sorted by deadline  
 - Edit tasks  
 - Delete tasks  
 - Mark tasks as completed  
-- Tasks are persisted in `tasks.txt`  
+- Tasks are persisted in `todolist/tasks.txt`  
 
 ---
 
 ## Notes
 
-- `tasks.txt` will be created automatically if it doesn’t exist.  
-- CLI colors are powered by `colorama`.  
-- Using a virtual environment is recommended to keep dependencies isolated.  
+- `todolist/tasks.txt` is auto-created if it doesn’t exist  
+- CLI colors are powered by `colorama`  
+- Use a virtual environment to isolate dependencies  
+- Sorting ensures earliest deadlines appear first  
 
 ---
 
