@@ -33,6 +33,17 @@ def validate_date(date_text):
         return False
 
 def load_tasks():
+    """
+    Loads tasks from the tasks file (file_path).
+
+    - Checks if the file exists.
+    - Reads each non-empty line from the file.
+    - Splits the line into: task_id, task_description, task_deadline, task_status.
+    - Converts task_id to an integer and appends the task as a list to tasks.
+    - If file is not found, prints an error message in red.
+    - Returns a list of tasks, where each task is represented as:
+      [task_id (int), description (str), deadline (str), status (str)]
+    """
     tasks=[]
     if os.path.exists(file_path):
         with open(file_path,"r") as file:
@@ -46,6 +57,18 @@ def load_tasks():
     return tasks
 
 def save_tasks(tasks):
+    """
+    Saves a list of tasks to the tasks file (file_path).
+
+    - Opens the file in write mode ("w"), overwriting any existing content.
+    - Writes each task as a comma-separated line in the format:
+        task_id, task_description, task_deadline, task_status
+    - If saving succeeds, prints a success message in green.
+    - Handles possible errors:
+        * PermissionError → No write permission for the file.
+        * FileNotFoundError → Invalid file path.
+        * Exception → Any other unexpected error.
+    """
     try:
         with open(file_path, "w") as file:
             for task in tasks:
@@ -60,6 +83,25 @@ def save_tasks(tasks):
 
 
 def add_task(tasks):
+    """
+    Adds a new task to the task list.
+
+    - Generates a new task_id:
+        * 1 if the task list is empty
+        * Otherwise, last task's id + 1
+    - Prompts the user for:
+        * Task description
+        * Task deadline (in YYYY-MM-DD format)
+    - Validates the deadline format using validate_date().
+        * If valid:
+            - Creates a new task with status "Pending"
+            - Appends it to the tasks list
+            - Saves tasks to file using save_tasks()
+            - Prints a success message
+            - Reloads tasks from file and returns them
+        * If invalid:
+            - Returns the original tasks list unchanged
+    """
     task_id= 1 if len(tasks)==0 else tasks[-1][0]+1
     task_desc=input(Fore.BLUE+"📑 Enter task description: ")
     task_deadline=input(Fore.BLUE+"📆 Enter deadline (YYYY-MM-DD): ")
@@ -73,6 +115,20 @@ def add_task(tasks):
         return tasks
 
 def view_tasks(tasks):
+    """
+    Displays the list of tasks grouped into Pending and Completed sections.
+
+    - Separates tasks into:
+        * pending_tasks   → tasks with status "Pending"
+        * completed_tasks → tasks with status "Completed"
+    - Sorts both groups by their deadline date (ascending).
+    - Prints:
+        * A header for "Pending" tasks, followed by each task’s id, description, and deadline
+          in yellow text (or a red warning if no pending tasks exist).
+        * A header for "Completed" tasks, followed by each task’s id, description, and deadline
+          in green text (or a red warning if no completed tasks exist).
+    - Uses color formatting (via colorama) to highlight sections and improve readability.
+    """
     print()
     print(Back.LIGHTMAGENTA_EX+"📝 To-Do List:"+Style.RESET_ALL)
     pending_tasks=[t for t in tasks if t[3]=='Pending']
@@ -95,6 +151,24 @@ def view_tasks(tasks):
     print()
 
 def edit_task(tasks):
+    """
+    Allows the user to edit an existing task in the task list.
+
+    Workflow:
+    - Displays the current tasks by calling view_tasks().
+    - Prompts the user to enter the task_id of the task they want to edit.
+    - Searches the tasks list for a matching task_id.
+        * If found:
+            - Asks the user for a new description and a new deadline (YYYY-MM-DD).
+            - Validates the deadline format using validate_date().
+                · If valid → updates the task’s description and deadline,
+                  saves changes to the file (via save_tasks()), prints success,
+                  and reloads tasks (via load_tasks()).
+                · If invalid → returns the original tasks unchanged.
+        * If no matching task_id is found → prints a "Task not found" message.
+    - Handles invalid input (non-integer task_id) with a ValueError exception.
+    - Returns the updated tasks list (or original list if update fails).
+    """
     view_tasks(tasks)
     try:
         task_id=int(input(Fore.BLUE+"👩🏻‍💻Enter task id to edit:"))
@@ -115,6 +189,22 @@ def edit_task(tasks):
     return tasks
 
 def delete_task(tasks):
+    """
+    Deletes a task from the task list based on its task_id.
+
+    Workflow:
+    - Displays the current tasks by calling view_tasks().
+    - Prompts the user to enter the task_id of the task they want to delete.
+    - Creates a new list (new_tasks) that excludes the task with the given id.
+        * If the length of new_tasks is the same as the original tasks list,
+          it means the task_id was not found → prints an error message.
+        * Otherwise:
+            - Saves the updated list using save_tasks().
+            - Prints a success message.
+            - Reloads tasks from file (via load_tasks()) and returns them.
+    - Handles invalid input (non-integer task_id) with a ValueError exception.
+    - Returns the updated tasks list (or original list if deletion fails).
+    """
     view_tasks(tasks)
     try:
         task_id=int(input(Fore.BLUE+"👩🏻‍💻Enter task id to delete:"))
@@ -130,6 +220,23 @@ def delete_task(tasks):
     return tasks
 
 def mark_completed(tasks):
+    """
+    Marks a specific task as completed in the task list.
+
+    Workflow:
+    - Displays the current tasks by calling view_tasks().
+    - Prompts the user to enter the task_id of the task to mark as completed.
+    - Searches the tasks list for the matching task_id.
+        * If found:
+            - Updates the task’s status to "Completed".
+            - Saves the updated task list using save_tasks().
+            - Prints a success message.
+            - Reloads tasks from file (via load_tasks()) and returns them.
+        * If not found:
+            - No explicit "not found" message is shown; function simply returns tasks unchanged.
+    - Handles invalid input (non-integer task_id) with a ValueError exception.
+    - Returns the updated tasks list (or original list if marking fails).
+    """
     view_tasks(tasks)
     try:
         task_id=int(input(Fore.BLUE+"👩🏻‍💻 Enter task id to mark as completed:"))
@@ -145,6 +252,23 @@ def mark_completed(tasks):
 
 
 def main():
+    """
+    Main function to run the To-Do List Manager.
+
+    Features:
+    - Loads tasks from the file using load_tasks().
+    - Displays a menu with options for the user:
+        1. Add Task
+        2. View Tasks
+        3. Edit Task
+        4. Delete Task
+        5. Mark Task as Completed
+        6. Exit
+    - Executes the selected option by calling the respective function.
+    - Updates the task list after operations like add, edit, delete, or mark completed.
+    - Loops continuously until the user chooses to exit.
+    - Provides colored, user-friendly CLI output.
+    """
     tasks=load_tasks()
     while(True):
         print()
